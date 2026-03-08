@@ -1,0 +1,31 @@
+{
+  "name": "hackernews_proxy",
+  "version": "1.0.0",
+  "description": "A TypeScript-based proxy service for the Hacker News Firebase API",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "hackernews",
+    "proxy",
+    "api",
+    "serverless"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "h3": "^2.0.1-rc.14"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
