@@ -1,4 +1,4 @@
-import { createRouter, eventHandler, handleCors, getRouterParams, getQuery, createError, toRequest } from 'h3';
+import { createRouter, handleCors, getRouterParams, getQuery, createError } from 'h3';
 
 // Create router
 const router = createRouter({
@@ -14,7 +14,7 @@ const router = createRouter({
 // Health check endpoint
 router.get(
   '/',
-  eventHandler(() => ({
+  () => ({
     name: 'Hacker News Proxy',
     version: '1.0.0',
     endpoints: {
@@ -23,18 +23,18 @@ router.get(
       'GET /item/:id': 'Get any item by ID',
       'GET /user/:id': 'Get user profile by ID',
     },
-  }))
+  })
 );
 
 // Stories list endpoint
 router.get(
   '/stories/:type',
-  eventHandler(async (event) => {
+  async (event) => {
     const params = getRouterParams(event);
     const query = getQuery(event);
 
-    const storyType = params.type as string;
-    const limit = query.limit ? parseInt(query.limit as string, 10) : 10;
+    const storyType = params.type;
+    const limit = query.limit ? parseInt(query.limit, 10) : 10;
 
     const validTypes = ['top', 'new', 'best', 'ask', 'show', 'job'];
 
@@ -56,7 +56,7 @@ router.get(
 
     // Fetch story IDs
     const idsResponse = await fetch(`${HN_API_BASE}/${storyType}stories.json`);
-    const ids = await idsResponse.json() as number[];
+    const ids = await idsResponse.json();
     const limitedIds = ids.slice(0, limit);
 
     // Fetch story details
@@ -71,15 +71,15 @@ router.get(
       data: stories.filter((s) => s !== null),
       timestamp: Date.now(),
     };
-  })
+  }
 );
 
 // Single story endpoint
 router.get(
   '/story/:id',
-  eventHandler(async (event) => {
+  async (event) => {
     const params = getRouterParams(event);
-    const id = parseInt(params.id as string, 10);
+    const id = parseInt(params.id, 10);
 
     if (isNaN(id)) {
       throw createError({
@@ -103,15 +103,15 @@ router.get(
       data: story,
       timestamp: Date.now(),
     };
-  })
+  }
 );
 
 // Generic item endpoint
 router.get(
   '/item/:id',
-  eventHandler(async (event) => {
+  async (event) => {
     const params = getRouterParams(event);
-    const id = parseInt(params.id as string, 10);
+    const id = parseInt(params.id, 10);
 
     if (isNaN(id)) {
       throw createError({
@@ -135,15 +135,15 @@ router.get(
       data: item,
       timestamp: Date.now(),
     };
-  })
+  }
 );
 
 // User endpoint
 router.get(
   '/user/:id',
-  eventHandler(async (event) => {
+  async (event) => {
     const params = getRouterParams(event);
-    const userId = params.id as string;
+    const userId = params.id;
 
     if (!userId) {
       throw createError({
@@ -167,11 +167,10 @@ router.get(
       data: user,
       timestamp: Date.now(),
     };
-  })
+  }
 );
 
-// Vercel serverless handler
-export default async function handler(request: Request) {
-  const event = toRequest(request);
-  return router.fetch(event);
+// Vercel serverless handler (ESM)
+export default async function handler(request) {
+  return router.fetch(request);
 }
