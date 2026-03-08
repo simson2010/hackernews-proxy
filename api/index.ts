@@ -19,6 +19,7 @@ function errorResponse(message: string, status = 500) {
   return jsonResponse({ error: message }, status);
 }
 
+// Vercel serverless handler
 export default async function handler(request: Request): Promise<Response> {
   // Handle CORS preflight
   if (request.method === 'OPTIONS') {
