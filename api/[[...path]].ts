@@ -44,7 +44,7 @@ export default async function handler(request: Request): Promise<Response> {
 
   try {
     // Health check
-    if (path === '/' || path === '/api/index') {
+    if (path === '/' || path === '/api/' || path === '/api/%5B%5B...path%5D%5D') {
       return jsonResponse({
         name: 'Hacker News Proxy',
         version: '1.0.0',
