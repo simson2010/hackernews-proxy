@@ -62,7 +62,7 @@ export default async function handler(request: Request): Promise<Response> {
       }
 
       const idsResponse = await fetch(`${HN_API_BASE}/${storyType}stories.json`);
-      const ids: number[] = await idsResponse.json();
+      const ids = await idsResponse.json() as number[];
       const limitedIds = ids.slice(0, limit);
 
       const stories = await Promise.all(
