@@ -1,4 +1,4 @@
-import { createRouter, eventHandler, handleCors, getRouterParams, getQuery, createError, toWebRequest } from 'h3';
+import { createRouter, eventHandler, handleCors, getRouterParams, getQuery, createError, toRequest } from 'h3';
 
 // Create router
 const router = createRouter({
@@ -172,6 +172,6 @@ router.get(
 
 // Vercel serverless handler
 export default async function handler(request: Request) {
-  const event = toWebRequest(request);
+  const event = toRequest(request);
   return router.fetch(event);
 }
