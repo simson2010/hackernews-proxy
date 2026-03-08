@@ -1,6 +1,4 @@
 // Vercel serverless function for Hacker News Proxy
-// Uses native fetch - no external dependencies needed
-
 const HN_API_BASE = 'https://hacker-news.firebaseio.com/v0';
 
 function jsonResponse(data: any, status = 200) {
@@ -19,9 +17,7 @@ function errorResponse(message: string, status = 500) {
   return jsonResponse({ error: message }, status);
 }
 
-// Vercel serverless handler
 export default async function handler(request: Request): Promise<Response> {
-  // Handle CORS preflight
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
@@ -33,32 +29,27 @@ export default async function handler(request: Request): Promise<Response> {
     });
   }
 
-  // Parse URL - handle both full URLs and relative paths
-  const url = new URL(
-    request.url.startsWith('http:') 
-      ? request.url 
-      : `https://vercel.app${request.url}`
-  );
+  const url = new URL(request.url);
   const path = url.pathname;
   const params = new URLSearchParams(url.search);
 
   try {
     // Health check
-    if (path === '/' || path === '/api/' || path === '/api/%5B%5B...path%5D%5D') {
+    if (path === '/api/' || path === '/api') {
       return jsonResponse({
         name: 'Hacker News Proxy',
         version: '1.0.0',
         endpoints: {
-          'GET /stories/:type': 'Get stories by type (top, new, best, ask, show, job)',
-          'GET /story/:id': 'Get a story by ID',
-          'GET /item/:id': 'Get any item by ID',
-          'GET /user/:id': 'Get user profile by ID',
+          'GET /api/stories/:type': 'Get stories by type (top, new, best, ask, show, job)',
+          'GET /api/story/:id': 'Get a story by ID',
+          'GET /api/item/:id': 'Get any item by ID',
+          'GET /api/user/:id': 'Get user profile by ID',
         },
       });
     }
 
-    // Stories list: /stories/:type?limit=10
-    const storiesMatch = path.match(/^\/stories\/(top|new|best|ask|show|job)$/);
+    // Stories: /api/stories/:type
+    const storiesMatch = path.match(/^\/api\/stories\/(top|new|best|ask|show|job)$/);
     if (storiesMatch) {
       const storyType = storiesMatch[1];
       const limit = parseInt(params.get('limit') || '10', 10);
@@ -84,8 +75,8 @@ export default async function handler(request: Request): Promise<Response> {
       });
     }
 
-    // Single story: /story/:id
-    const storyMatch = path.match(/^\/story\/(\d+)$/);
+    // Story: /api/story/:id
+    const storyMatch = path.match(/^\/api\/story\/(\d+)$/);
     if (storyMatch) {
       const id = parseInt(storyMatch[1], 10);
       const response = await fetch(`${HN_API_BASE}/item/${id}.json`);
@@ -101,8 +92,8 @@ export default async function handler(request: Request): Promise<Response> {
       });
     }
 
-    // Generic item: /item/:id
-    const itemMatch = path.match(/^\/item\/(\d+)$/);
+    // Item: /api/item/:id
+    const itemMatch = path.match(/^\/api\/item\/(\d+)$/);
     if (itemMatch) {
       const id = parseInt(itemMatch[1], 10);
       const response = await fetch(`${HN_API_BASE}/item/${id}.json`);
@@ -118,8 +109,8 @@ export default async function handler(request: Request): Promise<Response> {
       });
     }
 
-    // User profile: /user/:id
-    const userMatch = path.match(/^\/user\/([^/]+)$/);
+    // User: /api/user/:id
+    const userMatch = path.match(/^\/api\/user\/([^/]+)$/);
     if (userMatch) {
       const userId = userMatch[1];
       const response = await fetch(`${HN_API_BASE}/user/${userId}.json`);
@@ -135,7 +126,6 @@ export default async function handler(request: Request): Promise<Response> {
       });
     }
 
-    // Not found
     return errorResponse('Not Found', 404);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal Server Error';
