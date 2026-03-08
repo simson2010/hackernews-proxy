@@ -33,7 +33,12 @@ export default async function handler(request: Request): Promise<Response> {
     });
   }
 
-  const url = new URL(request.url);
+  // Parse URL - handle both full URLs and relative paths
+  const url = new URL(
+    request.url.startsWith('http') 
+      ? request.url 
+      : `https://vercel.app${request.url}`
+  );
   const path = url.pathname;
   const params = new URLSearchParams(url.search);
 
