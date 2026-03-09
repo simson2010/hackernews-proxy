@@ -89,7 +89,8 @@ router.get(
   })
 );
 
-export default toNodeListener(app);
+const handler = toNodeListener(app);
+export default function (req: any, res: any) { return handler(req, res); }
 
 if (process.env.NODE_ENV !== 'production') {
   const port = parseInt(process.env.PORT || '3000', 10);
