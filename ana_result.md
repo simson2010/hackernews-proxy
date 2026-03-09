@@ -148,3 +148,24 @@ Root cause: h3 v2 is pure ESM, incompatible with Vercel's CJS-based `@vercel/nod
 | Auth | ❌ |
 | Monitoring | ❌ |
 | Clean git state | ❌ |
+
+---
+
+## Live API Test Results (2026-03-09)
+
+Tested against `https://www.topxtop.top/`
+
+| Endpoint | Status | Notes |
+|----------|--------|-------|
+| `GET /` | ✅ | Returns name, version, endpoint map |
+| `GET /stories/top?limit=3` | ✅ | Returns 3 stories with full metadata |
+| `GET /stories/new?limit=3` | ✅ | Returns latest 3 stories |
+| `GET /stories/best?limit=2` | ✅ | Returns best-ranked stories |
+| `GET /stories/ask?limit=2` | ✅ | Returns Ask HN posts |
+| `GET /stories/show?limit=2` | ✅ | Returns Show HN posts |
+| `GET /stories/job?limit=2` | ✅ | Returns job listings |
+| `GET /story/47311815` | ✅ | Returns single story object |
+| `GET /item/47311815` | ✅ | Returns same item via generic endpoint |
+| `GET /user/imadr` | ✅ | Returns user profile (karma, about, submitted) |
+
+All endpoints operational. Response format consistent: `{ "data": {...}, "timestamp": <ms> }`.
